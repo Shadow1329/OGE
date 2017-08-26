@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Graphic">
+      <UniqueIdentifier>{41c54d2d-96c6-48c6-bf26-eecd13c24d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Graphic">
+      <UniqueIdentifier>{9eeee156-cf29-494d-b326-b215b3824ddc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Input">
+      <UniqueIdentifier>{b5d83d49-6699-4880-b748-a79cf9541082}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Input">
+      <UniqueIdentifier>{b0b41b6a-36e8-40b0-ac73-e8625894a1f9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="OGEWindow.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="OGEApplication.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="OGEGraphics.cpp">
+      <Filter>Файлы исходного кода\Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="OGECube.cpp">
+      <Filter>Файлы исходного кода\Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="OGECamera.cpp">
+      <Filter>Файлы исходного кода\Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="OGEInput.cpp">
+      <Filter>Файлы исходного кода\Input</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="OGEWindow.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="OGEApplication.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="OGEGraphics.h">
+      <Filter>Заголовочные файлы\Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="OGEVertex.h">
+      <Filter>Заголовочные файлы\Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="OGECube.h">
+      <Filter>Заголовочные файлы\Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="OGECamera.h">
+      <Filter>Заголовочные файлы\Graphic</Filter>
+    </ClInclude>
+    <ClInclude Include="OGEInput.h">
+      <Filter>Заголовочные файлы\Input</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
