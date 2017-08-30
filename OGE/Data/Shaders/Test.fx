@@ -13,7 +13,10 @@ uniform extern float4x4 gProjection;
 uniform extern float4x4 gWorldInverseTranspose;
 uniform extern float3 gEyePosisiton;
 
-uniform extern texture gTex;
+uniform extern texture gTexReflect;
+uniform extern texture gTexDiffuse;
+uniform extern texture gTexSpecular;
+uniform extern texture gTexNormal;
 
 uniform extern float4 gAmbientMtrl;
 uniform extern float4 gAmbientLight;
@@ -29,9 +32,42 @@ uniform extern float3 gLightVec;
 
 
 // Samplers for textures
-sampler TexSampler = sampler_state
+sampler TexSamplerReflect = sampler_state
 {
-	Texture = <gTex>;
+	Texture = <gTexReflect>;
+	MAGFILTER = ANISOTROPIC;
+    MINFILTER = ANISOTROPIC;
+    MIPFILTER = ANISOTROPIC;
+    AddressU = Wrap;
+    AddressV = Wrap;
+	MaxAnisotropy = 4;
+};
+
+sampler TexSamplerDiffuse = sampler_state
+{
+	Texture = <gTexDiffuse>;
+	MAGFILTER = ANISOTROPIC;
+    MINFILTER = ANISOTROPIC;
+    MIPFILTER = ANISOTROPIC;
+    AddressU = Wrap;
+    AddressV = Wrap;
+	MaxAnisotropy = 4;
+};
+
+sampler TexSamplerSpecular = sampler_state
+{
+	Texture = <gTexSpecular>;
+	MAGFILTER = ANISOTROPIC;
+    MINFILTER = ANISOTROPIC;
+    MIPFILTER = ANISOTROPIC;
+    AddressU = Wrap;
+    AddressV = Wrap;
+	MaxAnisotropy = 4;
+};
+
+sampler TexSamplerNormal = sampler_state
+{
+	Texture = <gTexNormal>;
 	MAGFILTER = ANISOTROPIC;
     MINFILTER = ANISOTROPIC;
     MIPFILTER = ANISOTROPIC;
@@ -42,13 +78,16 @@ sampler TexSampler = sampler_state
 
 
 
+
 // Structures
 
 // VS input
 struct VertexShaderInput
 {
-    float4 Position : POSITION0;    
-    float3 Normal : NORMAL0;  
+    float4 Position : POSITION0; 	
+	float3 Tangent : TANGENT0;
+	float3 Binormal : BINORMAL0;
+	float3 Normal : NORMAL0;  
 	float2 TexCoord : TEXCOORD0;
 };
 
@@ -56,43 +95,41 @@ struct VertexShaderInput
 struct VertexShaderOutput
 {
     float4 Position : POSITION0;
-	float4 Diffuse : COLOR0;
-    float4 Specular : COLOR1;
-    float2 TexCoord : TEXCOORD0;
+	float2 TexCoord : TEXCOORD0;
+	float3 EyeTangent : TEXCOORD1;
+    float3 LightDirTangent : TEXCOORD2;
 };
 
 
 
 
 // Vertex shader
-VertexShaderOutput TransformVS(VertexShaderInput input)
+VertexShaderOutput PhongVS(VertexShaderInput input)
 {
 	// Zero out our output
 	VertexShaderOutput output = (VertexShaderOutput)0;
+	
+	// Build TBN-basis.
+	float3x3 TBN;
+	TBN[0] = input.Tangent;
+	TBN[1] = input.Binormal;
+	TBN[2] = input.Normal;
+	float3x3 toTangentSpace = transpose(TBN);
+	
+	// Transform eye position to tangent space.
+	float3 eyePosLocal = mul(float4(gEyePosisiton, 1.0f), gWorldInverseTranspose);
+	float3 toEyeLocal = eyePosLocal - mul(input.Position, gWorld).xyz;
+	output.EyeTangent = mul(toEyeLocal, toTangentSpace);
+	
+	// Transform light direction to tangent space.
+	float3 lightDirLocal = mul(float4(gLightVec, 0.0f), gWorldInverseTranspose).xyz;
+	output.LightDirTangent  = mul(lightDirLocal, toTangentSpace);
 
-	// Preparations
-	float3 normal = normalize(mul(float4(input.Normal, 0.0f), gWorldInverseTranspose).xyz);
-	float3 pos  = mul(input.Position, gWorld).xyz;
-	float3 toEye = normalize(gEyePosisiton - pos);
 	
-	// Compute the reflection vector.
-	float3 r = reflect(-gLightVec, normal);
-	float t  = pow(max(dot(r, toEye), 0.0f), gSpecularPower);
-	float s = max(dot(gLightVec, normal), 0.0f);
-	
-	// Compute the ambient, diffuse and specular terms separatly. 
-	float3 ambient = gAmbientMtrl * gAmbientLight;
-	float3 diffuse = s * (gDiffuseMtrl * gDiffuseLight).rgb;
-	float3 spec = t * (gSpecularMtrl * gSpecularLight).rgb;
-	
-	// Sum all the terms together and copy over the diffuse alpha.
-	output.Diffuse = float4(ambient + diffuse, gDiffuseMtrl.a);
-	output.Specular = float4(spec, 0.0f);
-
 	// Transform to homogeneous clip space
-	float4x4 transformMatrix = mul(gWorld, gView);
-	transformMatrix = mul(transformMatrix, gProjection);
-    output.Position = mul(input.Position, transformMatrix);
+	output.Position = mul(input.Position, gWorld);
+	output.Position = mul(output.Position, gView);
+    output.Position = mul(output.Position, gProjection);
 	  
 	// Pass on texture coordinates to be interpolated in rasterization
 	output.TexCoord = input.TexCoord;
@@ -105,25 +142,55 @@ VertexShaderOutput TransformVS(VertexShaderInput input)
 
 
 // Pixel shader
-float4 TransformPS(VertexShaderOutput input) : COLOR
+float4 PhongPS(VertexShaderOutput input) : COLOR
 {
-	// Get texel from texture map that gets mapped to this pixel.
-	float3 texColor = tex2D(TexSampler, input.TexCoord).rgb;
-	float3 diffuse = input.Diffuse.rgb * texColor;
-    return float4(diffuse + input.Specular.rgb, input.Diffuse.a); 
+	// Normalize.
+	float3 eyeT = normalize(input.EyeTangent);
+	float3 lightVecT = normalize(input.LightDirTangent);
+
+
+	// Get normal
+	float3 normalT = tex2D(TexSamplerNormal, input.TexCoord);
+    normalT = normalize(2 * normalT - 1.0f);
+	
+
+	// Compute the reflection vector.
+	float3 r = reflect(-lightVecT, normalT);
+	float t  = pow(max(dot(r, eyeT), 0.0f), gSpecularPower);
+	float s = max(dot(lightVecT, normalT), 0.0f);
+	float a = 1.0;
+	
+	
+	// Reflect component
+	float3 envMapTex = reflect(-eyeT, normalT);
+    float3 reflectedColor = texCUBE(TexSamplerReflect, envMapTex);
+	
+	// Ambient component
+	float3 texColorAmbient = tex2D(TexSamplerDiffuse, input.TexCoord).rgb;
+	float3 ambient = a * (reflectedColor + texColorAmbient) / 2.0f * gAmbientLight.rgb;
+
+	// Diffuse component
+	float3 texColorDiffuse = tex2D(TexSamplerDiffuse, input.TexCoord).rgb;
+	float3 diffuse = s * (reflectedColor + texColorDiffuse) / 2.0f * gDiffuseLight.rgb;
+	
+	// Specular component
+	float3 texColorSpecular = tex2D(TexSamplerSpecular, input.TexCoord).rgb;
+	float3 specular = t * texColorSpecular * gSpecularLight.rgb;
+	
+    return float4(ambient + diffuse + specular, 1.0); 
 }
 
 
 
 
 // Technic discription
-technique TransformTech
+technique PhongTech
 {
 	pass P0
 	{
 		// Specify the vertex and pixel shader associated with this pass
-		vertexShader = compile vs_3_0 TransformVS();
-		pixelShader  = compile ps_3_0 TransformPS();
+		vertexShader = compile vs_3_0 PhongVS();
+		pixelShader  = compile ps_3_0 PhongPS();
 
 		// Specify the render/device states associated with this pass
 		FillMode = Solid;

@@ -44,6 +44,12 @@
     <ClCompile Include="OGEInput.cpp">
       <Filter>Файлы исходного кода\Input</Filter>
     </ClCompile>
+    <ClCompile Include="OGEVertex.cpp">
+      <Filter>Файлы исходного кода\Graphic</Filter>
+    </ClCompile>
+    <ClCompile Include="OGEGround.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OGEWindow.h">
@@ -66,6 +72,9 @@
     </ClInclude>
     <ClInclude Include="OGEInput.h">
       <Filter>Заголовочные файлы\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="OGEGround.h">
+      <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

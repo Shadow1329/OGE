@@ -5,6 +5,7 @@
 
 #include "OGEVertex.h"
 #include "OGECube.h"
+#include "OGEGround.h"
 #include "OGECamera.h"
 
 using namespace std;
@@ -16,28 +17,34 @@ using namespace std;
 class OGEGraphics
 {
 	private:
-		static IDirect3D9*			m_Direct3D;
-		static IDirect3DDevice9*	m_Direct3DDevice;
-		static IDirect3DTexture9*	m_Direct3DTexture1;
-		static IDirect3DTexture9*	m_Direct3DTexture2;
-		static ID3DXSprite*			m_Direct3DSprite;
-		static ID3DXFont*			m_Direct3dFont;
-		static ID3DXEffect*			m_Direct3dEffect;
-		static OGECube*				m_Box;
-		static OGECamera*			m_Camera;
+		static IDirect3D9*				m_Direct3D;
+		static IDirect3DDevice9*		m_Direct3DDevice;
+		static IDirect3DCubeTexture9*	m_Direct3DTextureReflect;
+		static IDirect3DTexture9*		m_Direct3DTexture1;
+		static IDirect3DTexture9*		m_Direct3DTexture1_Specular;
+		static IDirect3DTexture9*		m_Direct3DTexture1_Normal;
+		static IDirect3DTexture9*		m_Direct3DTexture2;
+		static IDirect3DTexture9*		m_Direct3DTexture2_Specular;
+		static IDirect3DTexture9*		m_Direct3DTexture2_Normal;
+		static ID3DXSprite*				m_Direct3DSprite;
+		static ID3DXFont*				m_Direct3dFont;
+		static ID3DXEffect*				m_Direct3dEffect;
+		static OGECube*					m_Box;
+		static OGEGround*				m_Ground;
+		static OGECamera*				m_Camera;
 
-		static D3DXMATRIX			m_ProjectionMatrix;
-		static D3DXMATRIX			m_ViewMatrix;
+		static D3DXMATRIX				m_ProjectionMatrix;
+		static D3DXMATRIX				m_ViewMatrix;
 
-		static D3DXVECTOR3			m_LightVec;
-		static D3DXCOLOR			m_DiffuseLight;
-		static D3DXCOLOR			m_AmbientLight;
-		static D3DXCOLOR			m_SpecularLight;
-		static float				m_SpecularPower;
+		static D3DXVECTOR3				m_LightVec;
+		static D3DXCOLOR				m_DiffuseLight;
+		static D3DXCOLOR				m_AmbientLight;
+		static D3DXCOLOR				m_SpecularLight;
+		static float					m_SpecularPower;
 
-		static D3DXCOLOR			m_DiffuseMtrl;
-		static D3DXCOLOR			m_AmbientMtrl;
-		static D3DXCOLOR			m_SpecularMtrl;
+		static D3DXCOLOR				m_DiffuseMtrl;
+		static D3DXCOLOR				m_AmbientMtrl;
+		static D3DXCOLOR				m_SpecularMtrl;
 
 
 

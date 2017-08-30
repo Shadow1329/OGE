@@ -12,7 +12,7 @@ public:
 	OGECube(IDirect3DDevice9* device);
 	~OGECube();
 
-	void Draw(IDirect3DDevice9* device, D3DMATERIAL9* mtrl);
+	void Draw(IDirect3DDevice9* device);
 
 
 private:

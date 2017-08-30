@@ -23,7 +23,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OGECamera.cpp" />
     <ClCompile Include="OGECube.cpp" />
+    <ClCompile Include="OGEGround.cpp" />
     <ClCompile Include="OGEInput.cpp" />
+    <ClCompile Include="OGEVertex.cpp" />
     <ClCompile Include="OGEWindow.cpp" />
     <ClCompile Include="OGEGraphics.cpp" />
   </ItemGroup>
@@ -31,6 +33,7 @@
     <ClInclude Include="OGEApplication.h" />
     <ClInclude Include="OGECamera.h" />
     <ClInclude Include="OGECube.h" />
+    <ClInclude Include="OGEGround.h" />
     <ClInclude Include="OGEInput.h" />
     <ClInclude Include="OGEVertex.h" />
     <ClInclude Include="OGEWindow.h" />

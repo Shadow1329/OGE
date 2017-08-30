@@ -129,7 +129,7 @@ bool OGEApplication::Update(float timeDelta)
 
 	// Render
 	OGEGraphics::Test_UpdateView();
-	OGEGraphics::Clear(0xffffffff, 1.0f);
+	OGEGraphics::Clear(0xff000000, 1.0f);
 	OGEGraphics::BeginScene();
 	OGEGraphics::Test_DrawGround(timeDelta);
 	OGEGraphics::Test_DrawCube(timeDelta);

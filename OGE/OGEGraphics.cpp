@@ -6,28 +6,34 @@
 
 
 // Members
-IDirect3D9*			OGEGraphics::m_Direct3D = NULL;
-IDirect3DDevice9*	OGEGraphics::m_Direct3DDevice = NULL;
-IDirect3DTexture9*	OGEGraphics::m_Direct3DTexture1 = NULL;
-IDirect3DTexture9*	OGEGraphics::m_Direct3DTexture2 = NULL;
-ID3DXSprite*		OGEGraphics::m_Direct3DSprite = NULL;
-ID3DXFont*			OGEGraphics::m_Direct3dFont = NULL;
-ID3DXEffect*		OGEGraphics::m_Direct3dEffect = NULL;
-OGECube*			OGEGraphics::m_Box = NULL;
-OGECamera*			OGEGraphics::m_Camera = NULL;
+IDirect3D9*				OGEGraphics::m_Direct3D = NULL;
+IDirect3DDevice9*		OGEGraphics::m_Direct3DDevice = NULL;
+IDirect3DCubeTexture9*	OGEGraphics::m_Direct3DTextureReflect = NULL;
+IDirect3DTexture9*		OGEGraphics::m_Direct3DTexture1 = NULL;
+IDirect3DTexture9*		OGEGraphics::m_Direct3DTexture1_Specular = NULL;
+IDirect3DTexture9*		OGEGraphics::m_Direct3DTexture1_Normal = NULL;
+IDirect3DTexture9*		OGEGraphics::m_Direct3DTexture2 = NULL;
+IDirect3DTexture9*		OGEGraphics::m_Direct3DTexture2_Specular = NULL;
+IDirect3DTexture9*		OGEGraphics::m_Direct3DTexture2_Normal = NULL;
+ID3DXSprite*			OGEGraphics::m_Direct3DSprite = NULL;
+ID3DXFont*				OGEGraphics::m_Direct3dFont = NULL;
+ID3DXEffect*			OGEGraphics::m_Direct3dEffect = NULL;
+OGECube*				OGEGraphics::m_Box = NULL;
+OGEGround*				OGEGraphics::m_Ground = NULL;
+OGECamera*				OGEGraphics::m_Camera = NULL;
 
-D3DXMATRIX			OGEGraphics::m_ProjectionMatrix;
-D3DXMATRIX			OGEGraphics::m_ViewMatrix;
+D3DXMATRIX				OGEGraphics::m_ProjectionMatrix;
+D3DXMATRIX				OGEGraphics::m_ViewMatrix;
 
-D3DXVECTOR3			OGEGraphics::m_LightVec;
-D3DXCOLOR			OGEGraphics::m_DiffuseLight;
-D3DXCOLOR			OGEGraphics::m_AmbientLight;
-D3DXCOLOR			OGEGraphics::m_SpecularLight;
-float				OGEGraphics::m_SpecularPower;
+D3DXVECTOR3				OGEGraphics::m_LightVec;
+D3DXCOLOR				OGEGraphics::m_DiffuseLight;
+D3DXCOLOR				OGEGraphics::m_AmbientLight;
+D3DXCOLOR				OGEGraphics::m_SpecularLight;
+float					OGEGraphics::m_SpecularPower;
 
-D3DXCOLOR			OGEGraphics::m_DiffuseMtrl;
-D3DXCOLOR			OGEGraphics::m_AmbientMtrl;
-D3DXCOLOR			OGEGraphics::m_SpecularMtrl;
+D3DXCOLOR				OGEGraphics::m_DiffuseMtrl;
+D3DXCOLOR				OGEGraphics::m_AmbientMtrl;
+D3DXCOLOR				OGEGraphics::m_SpecularMtrl;
 
 
 
@@ -123,14 +129,10 @@ bool OGEGraphics::Init(HWND hwnd, bool windowed, int width, int height)
 // Setup
 void OGEGraphics::Test_Setup()
 {
-	// Create cube
-	m_Box = new OGECube(m_Direct3DDevice);
-
-
 	// Create light
 	m_LightVec = D3DXVECTOR3(0.0, 0.7f, -0.7f);
-	m_DiffuseLight = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_AmbientLight = D3DXCOLOR(0.6f, 0.6f, 0.6f, 1.0f);
+	m_DiffuseLight = D3DXCOLOR(0.7f, 0.6f, 0.5f, 1.0f);
+	m_AmbientLight = D3DXCOLOR(0.7f, 0.6f, 0.5f, 1.0f);
 	m_SpecularLight = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_SpecularPower = 5.0f;
 
@@ -138,12 +140,19 @@ void OGEGraphics::Test_Setup()
 	// Create material
 	m_DiffuseMtrl = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_AmbientMtrl = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_SpecularMtrl = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
+	m_SpecularMtrl = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 
 	// Create textures
-	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Crate.jpg" ,&m_Direct3DTexture1);
-	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Stone.png", &m_Direct3DTexture2);
+	D3DXCreateCubeTextureFromFile(m_Direct3DDevice, L"Data/Textures/Grass.dds", &m_Direct3DTextureReflect);
+	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Floor1.png" ,&m_Direct3DTexture1);
+	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Floor1_Specular.png", &m_Direct3DTexture1_Specular);
+	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Floor1_Normal.png", &m_Direct3DTexture1_Normal);
+	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Floor.png", &m_Direct3DTexture2);
+	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Floor_Specular.png", &m_Direct3DTexture2_Specular);
+	D3DXCreateTextureFromFile(m_Direct3DDevice, L"Data/Textures/Floor_Normal.png", &m_Direct3DTexture2_Normal);
+	
+	
 
 
 	// Create sprite
@@ -161,6 +170,18 @@ void OGEGraphics::Test_Setup()
 		MessageBoxA(0, (char*)errors->GetBufferPointer(), 0, 0);
 
 
+	// Init vertex declaration
+	OGEVertex::InitVertexDeclaration(m_Direct3DDevice);
+
+
+	// Create cube
+	m_Box = new OGECube(m_Direct3DDevice);
+
+
+	// Create ground
+	m_Ground = new OGEGround(m_Direct3DDevice);
+
+
 	// Create camera
 	m_Camera = new OGECamera();
 }
@@ -176,36 +197,81 @@ void OGEGraphics::Release()
 		delete m_Camera;
 		m_Camera = NULL;
 	}
+
+	if (m_Ground)
+	{
+		delete m_Ground;
+		m_Ground = NULL;
+	}
+
 	if (m_Box)
 	{
 		delete m_Box;
 		m_Box = NULL;
 	}
+
+	OGEVertex::ReleaseVertexDeclaration();
+
 	if (m_Direct3dFont)
 	{
 		m_Direct3dFont->Release();
 		m_Direct3dFont = NULL;
 	}
+
 	if (m_Direct3DSprite)
 	{
 		m_Direct3DSprite->Release();
 		m_Direct3DSprite = NULL;
 	}
+
+	if (m_Direct3DTexture2_Normal)
+	{
+		m_Direct3DTexture2_Normal->Release();
+		m_Direct3DTexture2_Normal = NULL;
+	}
+
+	if (m_Direct3DTexture1_Normal)
+	{
+		m_Direct3DTexture1_Normal->Release();
+		m_Direct3DTexture1_Normal = NULL;
+	}
+
+	if (m_Direct3DTexture2_Specular)
+	{
+		m_Direct3DTexture2_Specular->Release();
+		m_Direct3DTexture2_Specular = NULL;
+	}
+
+	if (m_Direct3DTexture1_Specular)
+	{
+		m_Direct3DTexture1_Specular->Release();
+		m_Direct3DTexture1_Specular = NULL;
+	}
+
 	if (m_Direct3DTexture2)
 	{
 		m_Direct3DTexture2->Release();
 		m_Direct3DTexture2 = NULL;
 	}
+
 	if (m_Direct3DTexture1)
 	{
 		m_Direct3DTexture1->Release();
 		m_Direct3DTexture1 = NULL;
 	}
+
+	if (m_Direct3DTextureReflect)
+	{
+		m_Direct3DTextureReflect->Release();
+		m_Direct3DTextureReflect = NULL;
+	}
+
 	if (m_Direct3DDevice) 
 	{ 
 		m_Direct3DDevice->Release();
 		m_Direct3DDevice = NULL;
 	}
+
 	if (m_Direct3D) 
 	{ 
 		m_Direct3D->Release();
@@ -251,28 +317,31 @@ void OGEGraphics::Test_DrawCube(float timeDelta)
 		// Rotate Y-axis
 		static float y = 0.0f;
 		D3DXMatrixRotationY(&World, y);
-		y += timeDelta;
+		//y += timeDelta;
 		if (y >= 6.28f)
 			y = 0.0f;
 
 
 		D3DXMATRIX WorldInverseTranspose;
-		D3DXMatrixInverse(&WorldInverseTranspose, 0, &World);
-		D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
+		D3DXMatrixIdentity(&WorldInverseTranspose);
+		//D3DXMatrixInverse(&WorldInverseTranspose, 0, &World);
+		//D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
 
 
 		D3DXVECTOR3 EyePos = m_Camera->GetPosition();
 
 
 		// Setup the rendering FX
-		D3DXHANDLE hTech = m_Direct3dEffect->GetTechniqueByName("TransformTech");
-		m_Direct3dEffect->SetTechnique(hTech);
+		D3DXHANDLE hTech = m_Direct3dEffect->GetTechniqueByName("PhongTech");
 		D3DXHANDLE hWorld = m_Direct3dEffect->GetParameterByName(0, "gWorld");
 		D3DXHANDLE hView = m_Direct3dEffect->GetParameterByName(0, "gView");
 		D3DXHANDLE hProjection = m_Direct3dEffect->GetParameterByName(0, "gProjection");
 		D3DXHANDLE hWorldInvTrans = m_Direct3dEffect->GetParameterByName(0, "gWorldInverseTranspose");
 		D3DXHANDLE hEyePos = m_Direct3dEffect->GetParameterByName(0, "gEyePosisiton");
-		D3DXHANDLE hTex = m_Direct3dEffect->GetParameterByName(0, "gTex");
+		D3DXHANDLE hTexReflect = m_Direct3dEffect->GetParameterByName(0, "gTexReflect");
+		D3DXHANDLE hTexDiffuse = m_Direct3dEffect->GetParameterByName(0, "gTexDiffuse");
+		D3DXHANDLE hTexSpecular = m_Direct3dEffect->GetParameterByName(0, "gTexSpecular");
+		D3DXHANDLE hTexNormal = m_Direct3dEffect->GetParameterByName(0, "gTexNormal");
 		D3DXHANDLE hDiffuseMtrl = m_Direct3dEffect->GetParameterByName(0, "gDiffuseMtrl");
 		D3DXHANDLE hDiffuseLight = m_Direct3dEffect->GetParameterByName(0, "gDiffuseLight");
 		D3DXHANDLE hAmbientMtrl = m_Direct3dEffect->GetParameterByName(0, "gAmbientMtrl");
@@ -280,7 +349,8 @@ void OGEGraphics::Test_DrawCube(float timeDelta)
 		D3DXHANDLE hSpecularMtrl = m_Direct3dEffect->GetParameterByName(0, "gSpecularMtrl");
 		D3DXHANDLE hSpecularLight = m_Direct3dEffect->GetParameterByName(0, "gSpecularLight");
 		D3DXHANDLE hSpecularPower = m_Direct3dEffect->GetParameterByName(0, "gSpecularPower");
-		D3DXHANDLE hLightVecW = m_Direct3dEffect->GetParameterByName(0, "gLightVec");
+		D3DXHANDLE hLightVec = m_Direct3dEffect->GetParameterByName(0, "gLightVec");
+		m_Direct3dEffect->SetTechnique(hTech);
 		m_Direct3dEffect->SetMatrix(hWorld, &World);
 		m_Direct3dEffect->SetMatrix(hView, &m_ViewMatrix);
 		m_Direct3dEffect->SetMatrix(hProjection, &m_ProjectionMatrix);
@@ -293,8 +363,11 @@ void OGEGraphics::Test_DrawCube(float timeDelta)
 		m_Direct3dEffect->SetValue(hSpecularLight, &m_SpecularLight, sizeof(D3DXCOLOR));
 		m_Direct3dEffect->SetValue(hSpecularMtrl, &m_SpecularMtrl, sizeof(D3DXCOLOR));
 		m_Direct3dEffect->SetFloat(hSpecularPower, m_SpecularPower);
-		m_Direct3dEffect->SetValue(hLightVecW, &m_LightVec, sizeof(D3DXVECTOR3));
-		m_Direct3dEffect->SetTexture(hTex, m_Direct3DTexture1);
+		m_Direct3dEffect->SetValue(hLightVec, &m_LightVec, sizeof(D3DXVECTOR3));
+		m_Direct3dEffect->SetTexture(hTexReflect, m_Direct3DTextureReflect);
+		m_Direct3dEffect->SetTexture(hTexDiffuse, m_Direct3DTexture1);
+		m_Direct3dEffect->SetTexture(hTexSpecular, m_Direct3DTexture1_Specular);
+		m_Direct3dEffect->SetTexture(hTexNormal, m_Direct3DTexture1_Normal);
 
 		// Begin passes
 		UINT numPasses = 0;
@@ -304,7 +377,7 @@ void OGEGraphics::Test_DrawCube(float timeDelta)
 			m_Direct3dEffect->BeginPass(i);
 
 			// Draw
-			m_Box->Draw(m_Direct3DDevice, 0);
+			m_Box->Draw(m_Direct3DDevice);
 
 			m_Direct3dEffect->EndPass();
 		}
@@ -326,27 +399,30 @@ void OGEGraphics::Test_DrawGround(float timeDelta)
 
 		// Transform
 		D3DXMatrixScaling(&Sy, 10, 1, 10);
-		D3DXMatrixTranslation(&Ty, 0, -2, 0);
+		D3DXMatrixTranslation(&Ty, 0, -1, 0);
 		World = Sy * Ty;
 
 
 		D3DXMATRIX WorldInverseTranspose;
-		D3DXMatrixInverse(&WorldInverseTranspose, 0, &World);
-		D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
+		D3DXMatrixIdentity(&WorldInverseTranspose);
+		//D3DXMatrixInverse(&WorldInverseTranspose, 0, &World);
+		//D3DXMatrixTranspose(&WorldInverseTranspose, &WorldInverseTranspose);
 
 
 		D3DXVECTOR3 EyePos = m_Camera->GetPosition();
 
 
 		// Setup the rendering FX
-		D3DXHANDLE hTech = m_Direct3dEffect->GetTechniqueByName("TransformTech");
-		m_Direct3dEffect->SetTechnique(hTech);
+		D3DXHANDLE hTech = m_Direct3dEffect->GetTechniqueByName("PhongTech");
 		D3DXHANDLE hWorld = m_Direct3dEffect->GetParameterByName(0, "gWorld");
 		D3DXHANDLE hView = m_Direct3dEffect->GetParameterByName(0, "gView");
 		D3DXHANDLE hProjection = m_Direct3dEffect->GetParameterByName(0, "gProjection");
 		D3DXHANDLE hWorldInvTrans = m_Direct3dEffect->GetParameterByName(0, "gWorldInverseTranspose");
 		D3DXHANDLE hEyePos = m_Direct3dEffect->GetParameterByName(0, "gEyePosisiton");
-		D3DXHANDLE hTex = m_Direct3dEffect->GetParameterByName(0, "gTex");
+		D3DXHANDLE hTexReflect = m_Direct3dEffect->GetParameterByName(0, "gTexReflect");
+		D3DXHANDLE hTexDiffuse = m_Direct3dEffect->GetParameterByName(0, "gTexDiffuse");
+		D3DXHANDLE hTexSpecular = m_Direct3dEffect->GetParameterByName(0, "gTexSpecular");
+		D3DXHANDLE hTexNormal = m_Direct3dEffect->GetParameterByName(0, "gTexNormal");
 		D3DXHANDLE hDiffuseMtrl = m_Direct3dEffect->GetParameterByName(0, "gDiffuseMtrl");
 		D3DXHANDLE hDiffuseLight = m_Direct3dEffect->GetParameterByName(0, "gDiffuseLight");
 		D3DXHANDLE hAmbientMtrl = m_Direct3dEffect->GetParameterByName(0, "gAmbientMtrl");
@@ -354,7 +430,8 @@ void OGEGraphics::Test_DrawGround(float timeDelta)
 		D3DXHANDLE hSpecularMtrl = m_Direct3dEffect->GetParameterByName(0, "gSpecularMtrl");
 		D3DXHANDLE hSpecularLight = m_Direct3dEffect->GetParameterByName(0, "gSpecularLight");
 		D3DXHANDLE hSpecularPower = m_Direct3dEffect->GetParameterByName(0, "gSpecularPower");
-		D3DXHANDLE hLightVecW = m_Direct3dEffect->GetParameterByName(0, "gLightVec");
+		D3DXHANDLE hLightVec = m_Direct3dEffect->GetParameterByName(0, "gLightVec");
+		m_Direct3dEffect->SetTechnique(hTech);
 		m_Direct3dEffect->SetMatrix(hWorld, &World);
 		m_Direct3dEffect->SetMatrix(hView, &m_ViewMatrix);
 		m_Direct3dEffect->SetMatrix(hProjection, &m_ProjectionMatrix);
@@ -367,8 +444,11 @@ void OGEGraphics::Test_DrawGround(float timeDelta)
 		m_Direct3dEffect->SetValue(hSpecularLight, &m_SpecularLight, sizeof(D3DXCOLOR));
 		m_Direct3dEffect->SetValue(hSpecularMtrl, &m_SpecularMtrl, sizeof(D3DXCOLOR));
 		m_Direct3dEffect->SetFloat(hSpecularPower, m_SpecularPower);
-		m_Direct3dEffect->SetValue(hLightVecW, &m_LightVec, sizeof(D3DXVECTOR3));
-		m_Direct3dEffect->SetTexture(hTex, m_Direct3DTexture2);
+		m_Direct3dEffect->SetValue(hLightVec, &m_LightVec, sizeof(D3DXVECTOR3));
+		m_Direct3dEffect->SetTexture(hTexReflect, m_Direct3DTextureReflect);
+		m_Direct3dEffect->SetTexture(hTexDiffuse, m_Direct3DTexture2);
+		m_Direct3dEffect->SetTexture(hTexSpecular, m_Direct3DTexture2_Specular);
+		m_Direct3dEffect->SetTexture(hTexNormal, m_Direct3DTexture2_Normal);
 
 		// Begin passes
 		UINT numPasses = 0;
@@ -378,7 +458,7 @@ void OGEGraphics::Test_DrawGround(float timeDelta)
 			m_Direct3dEffect->BeginPass(i);
 
 			// Draw
-			m_Box->Draw(m_Direct3DDevice, 0);
+			m_Ground->Draw(m_Direct3DDevice);
 
 			m_Direct3dEffect->EndPass();
 		}
